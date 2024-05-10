@@ -1,12 +1,6 @@
 <template>
+
   <div>
-    <!-- Botões para selecionar qual slide exibir -->
-    <div>
-      <button @click="displaySlide(1)">Slide 1</button>
-      <button @click="displaySlide(2)">Slide 2</button>
-      <button @click="displaySlide(3)">Slide 3</button>
-      <button @click="displaySlide(4)">Slide 4</button>
-    </div>
 
     <!-- Slide 1: Formulário -->
     <div v-if="currentSlide === 1">
@@ -69,6 +63,13 @@
         <img :src="imageUrl" alt="Imagem" style="max-width: 100%; height: auto;">
       </div>
     </div>
+
+    <!-- Setas laterais para navegação -->
+    <div class="navigation-arrows">
+      <button class="prev" @click="prevSlide">&#10094;</button>
+      <button class="next" @click="nextSlide">&#10095;</button>
+      <button class="autoplay-toggle" @click="toggleAutoplay">{{ autoplayPaused ? 'Play' : 'Pause' }}</button>
+    </div>
   </div>
 </template>
 
@@ -87,7 +88,9 @@ export default {
       name: '',
       answer: '',
       currentSlide: 1, // Começa com o Slide 1 (Formulário)
-      imageUrl: 'https://raw.githubusercontent.com/JEECIST/WebDev-Challenge-25/main/challenge.png' // URL da imagem
+      imageUrl: 'https://raw.githubusercontent.com/JEECIST/WebDev-Challenge-25/main/challenge.png', // URL da imagem
+      autoplayInterval: null, // Intervalo para o autoplay
+      autoplayPaused: false // Estado do autoplay (pausado ou não)
     };
   },
   computed: {
@@ -130,7 +133,49 @@ export default {
     },
     displaySlide(slideNumber) {
       this.currentSlide = slideNumber; // Atualiza o slide atual
+    },
+    startAutoplay() {
+      this.autoplayInterval = setInterval(() => {
+        if (this.currentSlide === 4) {
+          this.currentSlide = 1;
+        } else {
+          this.currentSlide++;
+        }
+      }, 15000); // Mudança de slide a cada 15 segundos
+    },
+    stopAutoplay() {
+      clearInterval(this.autoplayInterval);
+    },
+    toggleAutoplay() {
+      this.autoplayPaused = !this.autoplayPaused;
+      if (this.autoplayPaused) {
+        this.stopAutoplay();
+      } else {
+        this.startAutoplay();
+      }
+    },
+    prevSlide() {
+      if (this.currentSlide === 1) {
+        this.currentSlide = 4;
+      } else {
+        this.currentSlide--;
+      }
+    },
+    nextSlide() {
+      if (this.currentSlide === 4) {
+        this.currentSlide = 1;
+      } else {
+        this.currentSlide++;
+      }
     }
+  },
+  mounted() {
+    // Iniciar o autoplay quando o componente é montado
+    this.startAutoplay();
+  },
+  beforeUnmount() {
+    // Parar o autoplay quando o componente é destruído para evitar vazamento de memória
+    this.stopAutoplay();
   }
 };
 </script>
@@ -250,5 +295,46 @@ p {
   font-size: 36px;
   color: #666;
   margin-bottom: 20px;
+}
+
+/* Estilo das setas de navegação */
+.navigation-arrows {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 98%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigation-arrows button {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.navigation-arrows button:hover {
+  color: #3498db;
+}
+
+/* Estilo do botão de autoplay */
+/* Estilo do botão de autoplay */
+.autoplay-toggle {
+  position: absolute;
+  bottom: -250px;
+  left: px; /* Alterado para alinhar à esquerda */
+  font-size: 16px;
+  background-color: #3498db;
+  color: black;
+  padding: -200px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.autoplay-toggle:hover {
+  background-color: #297db9;
 }
 </style>
