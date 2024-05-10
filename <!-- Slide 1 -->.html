@@ -1,25 +1,73 @@
-<!-- Slide 1 -->
-
 <template>
   <div>
-    <div id="carousel" class="carousel slide" data-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="carousel-content">
-            <h1>What's your name?</h1>
-          </div>
+    <!-- Botões para selecionar qual slide exibir -->
+    <div>
+      <button @click="displaySlide(1)">Slide 1</button>
+      <button @click="displaySlide(2)">Slide 2</button>
+      <button @click="displaySlide(3)">Slide 3</button>
+      <button @click="displaySlide(4)">Slide 4</button>
+    </div>
+
+    <!-- Slide 1: Formulário -->
+    <div v-if="currentSlide === 1">
+      <div>
+        <input v-model="name" placeholder="Enter your name" class="form-control">
+        <button @click="displayName" class="btn btn-primary mt-2">Submit</button>
+      </div>
+      <div v-if="answer" class="mt-3">
+        <h2>Answer:</h2>
+        <p>{{ answer }}</p>
+      </div>
+    </div>
+
+    <!-- Slide 2: Calendário -->
+    <div v-else-if="currentSlide === 2">
+      <div class="month">
+        <ul>
+          <li class="prev" @click="prevMonth">&#10094;</li>
+          <li class="next" @click="nextMonth">&#10095;</li>
+          <li>
+            <select v-model="selectedMonth" @change="updateMonth">
+              <option v-for="(month, index) in months" :key="index" :value="month">{{ month }}</option>
+            </select>
+            <br>
+            <span style="font-size:18px">{{ selectedYear }}</span>
+            <input type="number" v-model.number="selectedYear" @input="updateYear" min="1900" max="2100" step="1">
+          </li>
+        </ul>
+      </div>
+
+      <ul class="weekdays">
+        <li v-for="(day, index) in weekdays" :key="index">{{ day }}</li>
+      </ul>
+
+      <ul class="days">
+        <li v-for="day in computedDaysInMonth" :key="day" @click="selectDay(day)" :class="{ active: day === selectedDay }">{{ day }}</li>
+      </ul>
+      
+      <div v-if="selectedDay !== null">
+         {{ selectedDay }} {{ selectedMonth }} {{ selectedYear }}
+      </div>
+    </div>
+
+    <!-- Slide 3: -->
+    <div v-else-if="currentSlide === 3" class="carousel-item">
+      <div class="slide">
+        <div class="content">
+          <h1>Programming Jokes</h1>
+          <p>Why do programmers prefer dark mode? Because light attracts bugs!</p>
+          <p>Why was the statement scared while the comment was not?</p>
+          <p>Statements are executed</p>
         </div>
       </div>
     </div>
 
-    <div v-if="answer" class="mt-3">
-      <h2>Answer:</h2>
-      <p>{{ answer }}</p>
-    </div>
-
-    <div class="mt-3">
-      <input v-model="name" placeholder="Enter your name" class="form-control">
-      <button @click="displayName" class="btn btn-primary mt-2">Submit</button>
+    <!-- Slide 4: Imagem -->
+    <div v-else-if="currentSlide === 4">
+      <div>
+        <!-- Exibição da imagem -->
+        <img :src="imageUrl" alt="Imagem" style="max-width: 100%; height: auto;">
+      </div>
     </div>
   </div>
 </template>
@@ -27,25 +75,180 @@
 <script>
 export default {
   data() {
+    const currentDate = new Date();
     return {
+      currentDay: currentDate.getDate(),
+      currentWeekday: currentDate.getDay(),
+      weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      selectedMonth: 'May',
+      selectedYear: 2024,
+      selectedDay: null,
       name: '',
-      answer: ''
+      answer: '',
+      currentSlide: 1, // Começa com o Slide 1 (Formulário)
+      imageUrl: 'https://raw.githubusercontent.com/JEECIST/WebDev-Challenge-25/main/challenge.png' // URL da imagem
     };
   },
+  computed: {
+    computedDaysInMonth() {
+      const monthIndex = this.months.indexOf(this.selectedMonth);
+      const year = this.selectedYear;
+      const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+      const firstDayOfMonth = new Date(year, monthIndex, 1).getDay();
+      const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+      const paddedDays = new Array(firstDayOfMonth).fill('').concat(days);
+      return paddedDays;
+    }
+  },
   methods: {
+    selectDay(day) {
+      this.selectedDay = day;
+      this.printSelectedDay(day);
+    },
+    printSelectedDay(day) {
+      alert(`Selected Day: ${day} ${this.selectedMonth} ${this.selectedYear}`);
+    },
+    prevMonth() {
+      // Lógica para mostrar o mês anterior
+    },
+    nextMonth() {
+      // Lógica para mostrar o próximo mês
+    },
+    updateMonth(event) {
+      this.selectedMonth = event.target.value;
+    },
+    updateYear() {
+      // Não é necessário fazer parsing aqui, pois v-model.number já converte para número
+    },
     displayName() {
       if (this.name) {
         this.answer = `My name is ${this.name}`;
       } else {
         this.answer = '';
       }
+    },
+    displaySlide(slideNumber) {
+      this.currentSlide = slideNumber; // Atualiza o slide atual
     }
   }
 };
 </script>
 
 <style scoped>
-.carousel-content {
+/* Reset de estilos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilo do cabeçalho do mês */
+.month {
+  background-color: #3498db;
+  color: white;
   text-align: center;
+  padding: 20px;
+}
+
+/* Estilo da lista de meses */
+.month ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo dos botões de navegação */
+.month ul li {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+/* Estilo do seletor de mês */
+.month select {
+  font-size: 16px;
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+/* Estilo do cabeçalho dos dias da semana */
+.weekdays {
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+/* Estilo dos dias da semana */
+.weekdays li {
+  width: calc(100% / 7);
+  text-align: center;
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+/* Estilo dos dias do mês */
+.days {
+  background-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+/* Estilo dos dias do mês */
+.days li {
+  width: calc(100% / 7);
+  text-align: center;
+  font-size: 16px;
+  padding: 10px 0;
+  border: 1px solid #ccc;
+}
+
+/* Estilo dos dias ativos (selecionados) */
+.active {
+  background-color: #3498db;
+  color: white;
+}
+
+/* Estilo de hover dos dias */
+.days li:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.carousel-item {
+  display: flex;
+  justify-content: center;
+}
+
+.slide {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 1000px; /* Adjust max-width as needed */
+  background-color: #f2f2f2;
+  border-radius: 50px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  flex: 1;
+  padding: 50px;
+}
+
+.image {
+  flex: 1;
+}
+
+p {
+  font-size: 36px;
+  color: #666;
+  margin-bottom: 20px;
 }
 </style>
