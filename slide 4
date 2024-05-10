@@ -1,0 +1,21 @@
+<template>
+  <div>
+    <!-- Exibição da imagem -->
+    <img :src="imageUrl" alt="Imagem" style="max-width: 100%; height: auto;">
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      // URL da imagem
+      imageUrl: 'https://raw.githubusercontent.com/JEECIST/WebDev-Challenge-25/main/challenge.png'
+    };
+  }
+};
+</script>
+
+<style scoped>
+/* Estilo para garantir que a imagem se ajuste ao contêiner */
+</style>
