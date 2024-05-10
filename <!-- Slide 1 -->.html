@@ -68,7 +68,7 @@
     <div class="navigation-arrows">
       <button class="prev" @click="prevSlide">&#10094;</button>
       <button class="next" @click="nextSlide">&#10095;</button>
-      <button class="autoplay-toggle" @click="toggleAutoplay">{{ autoplayPaused ? 'Play' : 'Pause' }}</button>
+      <button class="autoplay-toggle" @click="toggleAutoplay">{{ autoplayPaused ? 'Play' : 'Pause autoplay' }}</button>
     </div>
   </div>
 </template>
@@ -110,7 +110,7 @@ export default {
       this.printSelectedDay(day);
     },
     printSelectedDay(day) {
-      alert(`Selected Day: ${day} ${this.selectedMonth} ${this.selectedYear}`);
+      this.answer = `Selected Day: ${day} ${this.selectedMonth} ${this.selectedYear}`;
     },
     prevMonth() {
       // Lógica para mostrar o mês anterior
@@ -312,13 +312,13 @@ p {
   border: none;
   font-size: 24px;
   cursor: pointer;
+
 }
 
 .navigation-arrows button:hover {
   color: #3498db;
 }
 
-/* Estilo do botão de autoplay */
 /* Estilo do botão de autoplay */
 .autoplay-toggle {
   position: absolute;
